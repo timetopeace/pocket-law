@@ -13,17 +13,21 @@ class AppSettings(BaseSettings):
 
 class Settings(AppSettings):
     ENVIRONMENT: str
+
     MONGO_URL: str
-    ALLOW_ORIGINS: List[str] = ["http://0.0.0.0:3000"]
+    MONGO_INITDB_DATABASE: str
     TEST_MONGO_URL: str = "mongodb://test:test@0.0.0.0:27018"
+    TEST_MONGO_INITDB_DATABASE: str = "test"
+
+    ALLOW_ORIGINS: List[str] = ["http://0.0.0.0:3000"]
+    DOMAIN: str = "0.0.0.0:8008"
+
     JWT_SECRET_KEY: str
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE = 60 * 5
 
     API_KEY: str
     API_KEY_NAME: str = "x-access-token"
-
-    DOMAIN_SCORING: str = "0.0.0.0:8000"
 
     LOG_LEVEL: str = 'INFO'
     LOG_FORMAT: str = 'json'
@@ -35,6 +39,14 @@ class Settings(AppSettings):
     # S3_BUCKET: str
     # MAX_FILE_SIZE: int = 52428800   # 50 Mb
     # ALLOW_FILE_EXTENSION: List[str] = [".doc", ".docx", ".pdf", ".txt", ".rtf"]
+
+    SMSC_LOGIN: str
+    SMSC_PASS: str
+    SMSC_SENDER: str
+
+    EMAIL_FROM: str
+    EMAIL_PASSWORD: str
+    EMAIL_SERVER: str
 
 
 settings = Settings()

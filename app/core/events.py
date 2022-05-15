@@ -23,21 +23,11 @@ async def check_database_connection() -> None:
     client = app.core.database.mongo_client
     if not isinstance(client, AsyncIOMotorClient):
         raise RuntimeError('Mongo client does not declared')
-    logger.info('Connection established on {}:{}'.format(*client.address))
 
 
 async def startup_event():
     logger.info('Startup')
-
-    if not settings.MONGO_CERT_PATH:
-        app.core.database.mongo_client = AsyncIOMotorClient(settings.MONGO_URL)
-    else:
-        app.core.database.mongo_client = AsyncIOMotorClient(
-            settings.MONGO_URL,
-            ssl_ca_certs=settings.MONGO_CERT_PATH,
-            ssl_cert_reqs=ssl.CERT_REQUIRED,
-        )
-
+    app.core.database.mongo_client = AsyncIOMotorClient(settings.MONGO_URL)
     try:
         await check_database_connection()
     except ServerSelectionTimeoutError as e:

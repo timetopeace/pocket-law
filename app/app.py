@@ -6,6 +6,8 @@ from gunicorn import glogging
 from pydantic.main import BaseModel
 from starlette.requests import Request
 
+from app.core.database import get_database, get_test_database
+from app.core.events import startup_event, shutdown_event, startup_test_event, shutdown_test_event
 from app.core.log_config import configure_logging
 from app.settings import settings
 from app.users.routes import user_router
@@ -56,3 +58,15 @@ app = FastAPI(
 app.include_router(user_router)
 
 app.add_api_route('/service/health/', health_check)
+
+
+testing = False
+if not testing:
+    app.add_event_handler('startup', startup_event)
+    app.add_event_handler('shutdown', shutdown_event)
+else:
+    app.dependency_overrides[get_database] = get_test_database
+
+    app.add_event_handler('startup', startup_test_event)
+    app.add_event_handler('shutdown', shutdown_test_event)
+
