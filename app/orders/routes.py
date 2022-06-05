@@ -273,6 +273,7 @@ async def complete_order(
         raise OrderNotFound()
     if order.status != OrderStatus.handling.value:
         raise OrderOperationWrongSatus()
+    # TODO check and set vulnerability
     order = await order_repository.change_oder_status(order_id=order_id, status=OrderStatus.done)
     # TODO send push notification to customer
     return await order_serializer.get_order_response(order)

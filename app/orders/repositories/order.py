@@ -39,7 +39,10 @@ class OrderRepository(BaseRepository):
             offset: int,
             statuses: List[OrderStatus],
     ) -> (int, List[Order]):
-        conditions = {"customer": str(user.id)}
+        conditions = {"$or": [
+            {"customer": str(user.id)},
+            {"expert": str(user.id)},
+        ]}
         if statuses:
             conditions["status"] = {"$in": statuses}
         cursor = self._db.aggregate([
@@ -63,18 +66,21 @@ class OrderRepository(BaseRepository):
         return Order(**inserted_order)
 
     async def change_oder_status(self, order_id: str, status: OrderStatus) -> Order:
-        await self._db.update_one({"_id": ObjectId(order_id)}, {"set": {"status": status}})
+        await self._db.update_one({"_id": ObjectId(order_id)}, {"$set": {"status": status}})
         return Order(**await self._db.find_one({"_id": ObjectId(order_id)}))
 
     async def set_expert(self, order_id: str, expert_id: str) -> Order:
         await self._db.update_one(
             {"_id": ObjectId(order_id)},
-            {"set": {"status": OrderStatus.handling, expert_id: expert_id}})
+            {"$set": {"status": OrderStatus.handling, "expert": expert_id}})
         return Order(**await self._db.find_one({"_id": ObjectId(order_id)}))
 
     async def set_rating(self, order_id: str, rating: float) -> Order:
-        await self._db.update_one({"_id": ObjectId(order_id)}, {"set": {"rating": rating}})
+        await self._db.update_one({"_id": ObjectId(order_id)}, {"$set": {"rating": rating}})
         return Order(**await self._db.find_one({"_id": ObjectId(order_id)}))
+
+    async def set_document_text(self, order_id: str, text: str):
+        await self._db.update_one({"_id": ObjectId(order_id)}, {"$set": {"document.text": text}})
 
     async def add_file_to_order_input(self, order_id: str, file: FileInfoDTO) -> Order:
         order_id = PydanticObjectId(order_id)

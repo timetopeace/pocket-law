@@ -49,26 +49,28 @@ def get_config():
     return AuthJWTSettings()
 
 
-app = FastAPI(
-    title="Pocket Law",
-    version="0.0.1",
-    openapi_version="3.0.0",
-    # root_path="/api",
-)
+def create_app(testing: bool = False):
+    app = FastAPI(
+        title="Pocket Law",
+        version="0.0.1",
+        openapi_version="3.0.0",
+        # root_path="/api",
+    )
 
-app.include_router(user_router)
-app.include_router(order_router)
+    app.include_router(user_router)
+    app.include_router(order_router)
 
-app.add_api_route("/service/health/", health_check)
+    app.add_api_route("/service/health/", health_check)
 
 
-testing = False
-if not testing:
-    app.add_event_handler("startup", startup_event)
-    app.add_event_handler("shutdown", shutdown_event)
-else:
-    app.dependency_overrides[get_database] = get_test_database
+    testing = False
+    if not testing:
+        app.add_event_handler("startup", startup_event)
+        app.add_event_handler("shutdown", shutdown_event)
+    else:
+        app.dependency_overrides[get_database] = get_test_database
 
-    app.add_event_handler("startup", startup_test_event)
-    app.add_event_handler("shutdown", shutdown_test_event)
+        app.add_event_handler("startup", startup_test_event)
+        app.add_event_handler("shutdown", shutdown_test_event)
 
+    return app
