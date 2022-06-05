@@ -19,7 +19,6 @@ from app.users.schemas import (
     CreateExpertDTO,
     ExpertResponse,
     ExpertSignin,
-    VerifyEmail,
     RefreshRequest,
     UpdateUserDTO,
     UpdateUserRequest,
@@ -47,7 +46,7 @@ async def auth_customer(
         background_tasks: BackgroundTasks,
         sms_service: SMSService = Depends(),
         user_auth: CustomerAuthRequest = Body(...),
-        user_repository: UserRepository = Depends(UserRepository),
+        user_repository: UserRepository = Depends(),
 ):
     user, created = await user_repository.get_or_create_user_by_phone(phone=user_auth.phone)
     background_tasks.add_task(sms_service.send_sms, user.phone, generate_code())
@@ -61,7 +60,7 @@ async def auth_customer(
 async def signin_customer(
         user_signin: CustomerSignin = Body(...),
         Authorize: AuthJWT = Depends(),
-        user_repository: UserRepository = Depends(UserRepository),
+        user_repository: UserRepository = Depends(),
 ):
     user = await user_repository.get_user_by_phone(phone=user_signin.phone)
     if not user:
@@ -81,7 +80,7 @@ async def create_expert(
         background_tasks: BackgroundTasks,
         mail_service: MailService = Depends(),
         user_signup: CreateExpertDTO = Body(...),
-        user_repository: UserRepository = Depends(UserRepository),
+        user_repository: UserRepository = Depends(),
 ):
     try:
         new_user = await user_repository.create_expert(user_signup)
@@ -97,7 +96,7 @@ async def create_expert(
 async def signin_expert(
         user_signin: ExpertSignin = Body(...),
         Authorize: AuthJWT = Depends(),
-        user_repository: UserRepository = Depends(UserRepository),
+        user_repository: UserRepository = Depends(),
 ):
     user = await user_repository.get_user_by_email(user_signin.email)
     if not user:
@@ -120,7 +119,6 @@ async def signin_expert(
 async def email_verification(
         code: str,
         user_repository: UserRepository = Depends(),
-        # code: VerifyEmail = Body(...)
 ):
     try:
         await user_repository.confirm_email_by_code(code)
@@ -133,7 +131,7 @@ async def email_verification(
 async def refresh_token(
         refresh_token: RefreshRequest = Body(...),
         Authorize: AuthJWT = Depends(),
-        user_repository: UserRepository = Depends(UserRepository),
+        user_repository: UserRepository = Depends(),
 ):
     try:
         user = await user_repository.get_by_refresh_token(refresh_token.refresh_token)
@@ -159,7 +157,7 @@ async def refresh_token(
 async def update_user(
         user: User = Depends(get_current_user),
         user_repository: UserRepository = Depends(),
-        update_user_request: UpdateUserRequest = Body(...),
+        update_user_request: UpdateUserRequest = Body(),
 ):
     user = await user_repository.update_user(
         user=user,

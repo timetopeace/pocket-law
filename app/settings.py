@@ -32,13 +32,13 @@ class Settings(AppSettings):
     LOG_LEVEL: str = 'INFO'
     LOG_FORMAT: str = 'json'
 
-    # S3_REGION: str = 'ru-central1'
-    # S3_ENDPOINT: str = 'https://storage.yandexcloud.net'
-    # S3_ACCESS_KEY: str
-    # S3_SECRET_ACCESS_KEY: str
-    # S3_BUCKET: str
-    # MAX_FILE_SIZE: int = 52428800   # 50 Mb
-    # ALLOW_FILE_EXTENSION: List[str] = [".doc", ".docx", ".pdf", ".txt", ".rtf"]
+    S3_REGION: str = 'ru-central1'
+    S3_ENDPOINT: str = 'https://storage.yandexcloud.net'
+    S3_ACCESS_KEY: str
+    S3_SECRET_ACCESS_KEY: str
+    S3_BUCKET: str
+    MAX_FILE_SIZE: int = 52428800   # 50 Mb
+    ALLOW_FILE_EXTENSION: List[str] = [".png", ".jpg", ".doc", ".docx", ".pdf"]
 
     SMSC_LOGIN: str
     SMSC_PASS: str

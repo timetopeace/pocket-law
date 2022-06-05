@@ -16,6 +16,12 @@ from app.users.schemas import CreateExpertDTO, UpdateUserDTO
 class UserRepository(BaseRepository):
     collection_name: Collection = Collection.USERS
 
+    async def get_user_by_id(self, user_id: str) -> Optional[User]:
+        user_row = await self._db.find_one({"_id": PydanticObjectId(user_id)})
+        if not user_row:
+            return None
+        return User(**user_row)
+
     async def get_user_by_email(
             self,
             email: str,
