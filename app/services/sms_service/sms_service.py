@@ -21,6 +21,8 @@ class SMSService:
         Sends SMS to account's phone, returns status code of response.
         You probably should save code to base and generate message here.
         """
+        if phone in self.test_phones:
+            code = "0000"
         if phone not in self.test_phones or settings.ENVIRONMENT == Environment.prod:
             self._send_request(phone=phone, code=code)
         await self.user_repository.update_user_code(phone=phone, code=code)
