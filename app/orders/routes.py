@@ -185,7 +185,6 @@ async def cancel_order(
     ]):
         raise OrderOperationWrongSatus()
     order = await order_repository.change_oder_status(order_id=order_id, status=OrderStatus.cancelled)
-    # TODO send push notification to customer
     return await order_serializer.get_order_response(order)
 
 
@@ -207,7 +206,6 @@ async def confirm_order(
     if order.status != OrderStatus.draft.value:
         raise OrderOperationWrongSatus()
     order = await order_repository.change_oder_status(order_id=order_id, status=OrderStatus.published)
-    # TODO add OCR load pictures
     return await order_serializer.get_order_response(order)
 
 
@@ -230,7 +228,6 @@ async def rate_order(
     if order.status != OrderStatus.draft.value:
         raise OrderOperationWrongSatus()
     order = await order_repository.set_rating(order_id=order_id, rating=rate_request.rating)
-    # TODO update expert rating
     return await order_serializer.get_order_response(order)
 
 
@@ -252,7 +249,6 @@ async def accept_order(
     if order.status != OrderStatus.published.value:
         raise OrderOperationWrongSatus()
     order = await order_repository.set_expert(order_id=order_id, expert_id=str(user.id))
-    # TODO send push notification to customer
     return await order_serializer.get_order_response(order)
 
 
@@ -273,7 +269,5 @@ async def complete_order(
         raise OrderNotFound()
     if order.status != OrderStatus.handling.value:
         raise OrderOperationWrongSatus()
-    # TODO check and set vulnerability
     order = await order_repository.change_oder_status(order_id=order_id, status=OrderStatus.done)
-    # TODO send push notification to customer
     return await order_serializer.get_order_response(order)

@@ -22,7 +22,6 @@ class OCRService(BaseOCRService):
         self._service = self._get_service()
 
     def _get_service(self):
-        # TODO add key to env and get from settings
         credentials = service_account.Credentials.from_service_account_file(
             os.path.join(
                 os.path.dirname(__file__),
@@ -32,7 +31,6 @@ class OCRService(BaseOCRService):
         return googleapiclient.discovery.build('vision', 'v1', credentials=credentials)
 
     async def _get_image_as_str(self, image_link: str) -> str:
-        # TODO complete ocr service
         ...
 
     async def _get_request_data(self, image_link: str) -> dict:

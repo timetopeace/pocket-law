@@ -4,25 +4,26 @@ from tests.users.conftest import test_faker
 
 
 @pytest.mark.asyncio
-class TestSignup:
-    url = "/user/signup/"
+class TestSignin:
+    url = "/user/signin/"
     fake_email = test_faker.email()
 
     @pytest.mark.parametrize(
         "phone",
         [
-            ("+79129990001"),
-            ("+70000000001"),
-            ("80000000001"),
-            ("+10000000001"),
-            ("9000000001"),
+            ("+79129990001", "0000"),
+            ("+70000000001", "1234"),
+            ("80000000001", "2134"),
+            ("+10000000001", "9420"),
+            ("9000000001", "2134"),
         ]
     )
-    async def test_customer(self, client, db_client, mock_sms_client, phone):
+    async def test_customer(self, client, db_client, mock_sms_client, phone, code):
         response = await client.post(
-            "user/auth/customer",
+            f"{self.url}customer",
             json={
                 "phone": phone,
+                "code": code,
             }
         )
         assert response.status_code == 200
@@ -31,17 +32,16 @@ class TestSignup:
         assert new_user['phone'] == phone
 
     @pytest.mark.parametrize(
-        "name, email, password",
+        "email, password",
         [
-            ("testuser", "test@mail.ru", "pass"),
-            ("someuser", "someuser@google.com", "D23@(dik&"),
+            ("test@mail.ru", "pass"),
+            ("someuser@google.com", "D23@(dik&"),
         ]
     )
-    async def test_expert(self, client, db_client, mock_smtp_service, name, email, password):
+    async def test_expert(self, client, db_client, mock_smtp_service, email, password):
         response = await client.post(
-            "user/singup/expert",
+            f"{self.url}expert",
             json={
-                "name": name,
                 "email": email,
                 "password": password,
             }
